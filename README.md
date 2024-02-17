@@ -1,11 +1,11 @@
-#Tic Tac Toe
+# Tic Tac Toe
 
 This is a simple web recreation of the classic game Tic Tac Toe.  
 
 Two players will each take a turn placing either an 'X' or an 'O' onto any 
 unoccupied square in a 3x3 grid.  
 
-Winning the game: 
+## Winning the game: 
 
     When one player gets 3 of their symbols in a row (Ex/ Diagonally, Horizontally, 
     or Vertically), they win.  Their score increases by 1.
