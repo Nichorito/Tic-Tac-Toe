@@ -80,11 +80,11 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     const players = [
         {
             name: playerOneName,
-            mark: 1 
+            mark: "X" 
         },
         {
             name: playerTwoName,
-            mark: 2
+            mark: "O"
         }
     ];
 

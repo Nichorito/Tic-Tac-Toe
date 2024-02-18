@@ -138,6 +138,12 @@ h1 {
     height: 100%;
     border: 3px solid #002d38; 
     background-color: #f8e5d5;
+    color: #4f8a9d;
+    font-size: 6rem;
+    font-family: "Coiny", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    text-shadow: 0px 4px 1px black;
 
 }
 
