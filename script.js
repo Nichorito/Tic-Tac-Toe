@@ -47,6 +47,10 @@ function Gameboard() {
     return { getBoard, placeMarker, printBoard };
 }
 
+
+
+
+
 /* 
 ** A cell represents a square on the 3x3 grid and can be marked by:
 ** - : Blank square,
@@ -59,7 +63,7 @@ function Cell() {
 
     const setColor = (column, row, activePlayer) => {
         const selectedCell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
-        selectedCell.classList.add(activePlayer.name)
+        selectedCell.classList.add(activePlayer);
     }
 
     // Change cell value
@@ -148,6 +152,10 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         let playerWon = checkWinCondition();
         console.log(playerWon)
 
+        //Set color of marker
+        const cell = Cell();
+        cell.setColor(row, column, getActivePlayer().name)
+
         if (playerWon === true) {
             console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
             return;
@@ -176,36 +184,24 @@ function ScreenController() {
     const activePlayerDiv = document.querySelector('#active-player');
     const boardDiv = document.querySelector('.grid');
 
-    const updateScreen = () => {
+    const updateScreen = (column, row) => {
         //Clear Grid
-        boardDiv.textContent='';
+        //boardDiv.textContent='';
 
         //Get updated board and player turn
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
         activePlayerDiv.textContent = `${activePlayer.name}'s turn`;
 
-        let i=1;
-        board.forEach((row, rowIndex) => {
-            row.forEach((column, columnIndex) => {
-                const cellButton = document.createElement("button");
-                cellButton.classList.add("cell");
-                cellButton.id = `cell-${i}`
+        const cell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
 
-                cellButton.dataset.column = columnIndex;
-                cellButton.dataset.row = rowIndex;
-                cellButton.textContent = column.getValue();
-                boardDiv.appendChild(cellButton);
-
-                i++
-            })
-        })
+        cell.textContent = board[row][column].getValue();
+        
     }
 
     function clickHandler(e) {
         const selectedColumn = e.target.dataset.column;
         const selectedRow = e.target.dataset.row;
-        const cell = Cell();
 
         if (!selectedColumn || !selectedRow) return;
 
@@ -213,10 +209,9 @@ function ScreenController() {
         game.playRound(selectedRow, selectedColumn);
 
         //Set color
-        const activePlayer = game.getActivePlayer();
-        cell.setColor(selectedRow, selectedColumn, activePlayer)
+        const activePlayer = game.getActivePlayer()
 
-        updateScreen();
+        updateScreen(selectedColumn, selectedRow);
     }
 
     boardDiv.addEventListener('click', clickHandler);
