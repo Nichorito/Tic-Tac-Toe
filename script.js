@@ -25,7 +25,7 @@ function Gameboard() {
     // if it is, placer a marker there
     const placeMarker = (column, row, player) => {
         console.log(board[column][row])
-        if (board[column][row].getValue() === 0) {
+        if (board[column][row].getValue() === '') {
             console.log("Valid Move")
             board[column][row].addMarker(player) 
             return true;
@@ -55,7 +55,12 @@ function Gameboard() {
 */
 
 function Cell() {
-    let value = 0;
+    let value = '';
+
+    const setColor = (column, row, activePlayer) => {
+        const selectedCell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
+        selectedCell.classList.add(activePlayer.name)
+    }
 
     // Change cell value
     const addMarker = (player) => {
@@ -63,8 +68,13 @@ function Cell() {
     }
     const getValue = () => value;
 
-    return { addMarker, getValue };
+    return { addMarker, getValue, setColor };
 }
+
+
+
+
+
 
 /*
 ** The GameController is responsible for switcing turns and placing player markers
@@ -106,21 +116,21 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         const currentBoard = board.printBoard();
         //Check for horizontal win conditions
         for (let row = 0; row < 3; row++) {
-            if (currentBoard[row][0] === currentBoard[row][1] && currentBoard[row][1] === currentBoard[row][2] && currentBoard[row][0] !== 0) {
+            if (currentBoard[row][0] === currentBoard[row][1] && currentBoard[row][1] === currentBoard[row][2] && currentBoard[row][0] !== '') {
                 return true;
             }
         }
 
         //Check for vertical win conditions
         for (let col = 0; col < 3; col++) {
-            if (currentBoard[0][col] === currentBoard[1][col] && currentBoard[1][col] === currentBoard[2][col] && currentBoard[0][col] !== 0) {
+            if (currentBoard[0][col] === currentBoard[1][col] && currentBoard[1][col] === currentBoard[2][col] && currentBoard[0][col] !== '') {
                 return true;
             }
         }
 
         //Check for diagonal win conditions
-        if ((currentBoard[0][0] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][2] && currentBoard[0][0] !== 0) ||
-            (currentBoard[0][2] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][0] && currentBoard[0][2] !== 0)) {
+        if ((currentBoard[0][0] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][2] && currentBoard[0][0] !== '') ||
+            (currentBoard[0][2] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][0] && currentBoard[0][2] !== '')) {
             return true;
         }
 
@@ -195,10 +205,17 @@ function ScreenController() {
     function clickHandler(e) {
         const selectedColumn = e.target.dataset.column;
         const selectedRow = e.target.dataset.row;
+        const cell = Cell();
 
         if (!selectedColumn || !selectedRow) return;
 
+        //Play a round on click
         game.playRound(selectedRow, selectedColumn);
+
+        //Set color
+        const activePlayer = game.getActivePlayer();
+        cell.setColor(selectedRow, selectedColumn, activePlayer)
+
         updateScreen();
     }
 
