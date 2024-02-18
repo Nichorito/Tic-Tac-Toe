@@ -158,7 +158,54 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, getActivePlayer};
+    return { playRound, getActivePlayer, getBoard: board.getBoard};
 }
 
-const game = GameController();
+function ScreenController() {
+    const game = GameController();
+    const activePlayerDiv = document.querySelector('#active-player');
+    const boardDiv = document.querySelector('.grid');
+
+    const updateScreen = () => {
+        //Clear Grid
+        boardDiv.textContent='';
+
+        //Get updated board and player turn
+        const board = game.getBoard();
+        const activePlayer = game.getActivePlayer();
+        activePlayerDiv.textContent = `${activePlayer.name}'s turn`;
+
+        let i=1;
+        board.forEach((row, rowIndex) => {
+            row.forEach((column, columnIndex) => {
+                const cellButton = document.createElement("button");
+                cellButton.classList.add("cell");
+                cellButton.id = `cell-${i}`
+
+                cellButton.dataset.column = columnIndex;
+                cellButton.dataset.row = rowIndex;
+                cellButton.textContent = column.getValue();
+                boardDiv.appendChild(cellButton);
+
+                i++
+            })
+        })
+    }
+
+    function clickHandler(e) {
+        const selectedColumn = e.target.dataset.column;
+        const selectedRow = e.target.dataset.row;
+
+        if (!selectedColumn || !selectedRow) return;
+
+        game.playRound(selectedRow, selectedColumn);
+        updateScreen();
+    }
+
+    boardDiv.addEventListener('click', clickHandler);
+
+    updateScreen();
+
+}
+
+ScreenController();
