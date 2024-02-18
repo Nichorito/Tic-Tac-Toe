@@ -1,0 +1,30 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #89aeb7;
+    --highlight-text: #fbf5e6;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--highlight-text);
+}
+
+.coiny-regular {
+    font-family: "Coiny", system-ui;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#header {
+    display: flex;
+    justify-content: center;
+    font-size: 2rem;
+    padding: none;
+}
+
+h1 {
+    margin: 5px;
+}

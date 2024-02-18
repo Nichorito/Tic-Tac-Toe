@@ -139,7 +139,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         console.log(playerWon)
 
         if (playerWon === true) {
-            console.log(`CONGRATULATIONS ${getActivePlayer().name}!! YOU WON!!!`);
+            console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
             return;
         }
 
