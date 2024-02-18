@@ -120,3 +120,59 @@ h1 {
 #player2-score {
     color: #4f8a9d;
 }
+
+/*/////////////////////
+///// GRID DISPLAY ////
+/////////////////////*/
+
+.grid {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+}
+
+.cell {
+    width: 100%;
+    height: 100%;
+    border: 3px solid #002d38; 
+}
+
+/*// Open Border Styling */
+
+#cell-1 {
+    border-left: none;
+    border-top: none;
+}
+
+#cell-2 {
+    border-top: none;
+}
+
+#cell-3 {
+    border-right: none;
+    border-top: none;
+}
+
+#cell-4 {
+    border-left: none;
+}
+
+#cell-6 {
+    border-right: none;
+}
+
+#cell-7 {
+    border-bottom: none;
+    border-left: none;
+}
+
+#cell-8 {
+    border-bottom: none;
+}
+
+#cell-9 {
+    border-bottom: none;
+    border-right: none;
+}
