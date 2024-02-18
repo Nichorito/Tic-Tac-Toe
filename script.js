@@ -24,11 +24,16 @@ function Gameboard() {
     // Checks whether the column and row the player chose is available and 
     // if it is, placer a marker there
     const placeMarker = (column, row, player) => {
-        if (board[column][row] === 0) {
+        console.log(board[column][row])
+        if (board[column][row].getValue() === 0) {
             console.log("Valid Move")
-            board[row][column].addMarker(player) 
+            board[column][row].addMarker(player) 
+            return true;
         }
-        else {console.log(`that is an invalid move on ${board[column][row]}`)}
+        else {
+            console.log(`that is an invalid move on ${column}, ${row}`)
+            return false;
+        };
     }
 
     //Prints the board to the console after each players turn
@@ -99,12 +104,19 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
         //Place player mark on desired column and row
         console.log(`Marking ${column},${row} with ${getActivePlayer().name}'s mark: ${getActivePlayer().mark}`);
-        board.placeMarker(column, row, getActivePlayer().mark)
+        let validMove = board.placeMarker(column, row, getActivePlayer().mark)
 
-        //Switch turn
-        switchPlayerTurn();
+        //Check whether the desired column and row are available, do not switch turns
+        //on an invalid move
+        if (validMove === true){
+
+            //Switch turn
+            switchPlayerTurn();
+        }
+
         printNewRound();
     }
+    
 
     //Initial boot display
     printNewRound();
