@@ -1,3 +1,5 @@
+
+
 /*
 ** The gameboard represents the state of the game.  
 ** Each square has a cell, which will be defined later
@@ -35,6 +37,7 @@ function Gameboard() {
         };
     }
 
+    //Resets the board after win condition has been met
     const resetBoard = () => {
         board.forEach(row => row.forEach(cell => cell.addMarker('')));
     }
@@ -45,18 +48,6 @@ function Gameboard() {
         console.log(boardWithCellValues)
         return boardWithCellValues;
     }
-         
-        
-        //const boardwithCellValues = 
-        //console.log(boardwithCellValues);
-        //return boardwithCellValues;
-    
-
-    /*const clearBoard = () => {
-        const clearBoard = board.map((row) => row.map((cell) => cell.textContent = ''))
-        console.log(clearBoard);
-        return clearBoard;
-    }*/
 
     //Provide interface for application
     return { getBoard, placeMarker, printBoard, resetBoard};
@@ -74,7 +65,7 @@ function Gameboard() {
 */
 
 function Cell() {
-    let value = ' ';
+    let value = '';
 
     const setColor = (column, row, activePlayer) => {
         const selectedCell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
@@ -82,9 +73,10 @@ function Cell() {
     }
 
     // Change cell value
-    const addMarker = (player) => {
-        value = player;
+    const addMarker = (mark) => {
+        value = mark;
     }
+
     const getValue = () => value;
 
     return { addMarker, getValue, setColor };
@@ -102,7 +94,7 @@ function Cell() {
 
 function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
-    //Create the board
+    //Create the board and screen
     const board = Gameboard();
 
     //Create player objects with name and marker type
@@ -126,23 +118,66 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Will be used for console declaration and later for UI 
     const getActivePlayer = () => activePlayer;
 
+
+
+    //Creates an updated board within the console, checks if a player has won,
+    //and then resets the board if they have
+
     const printNewRound = () => {
         console.log(`\n\n${getActivePlayer().name}'s turn.`);
-        board.printBoard();
+        const currentBoard = board.printBoard();
 
-        const playerWon = checkWinCondition();
-        if (playerWon) {
-            console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+        const playerWon = checkWinCondition(currentBoard);
+        console.log(playerWon)
+
+        if (playerWon == true) {
             board.resetBoard();
+            resetScreen();
             console.log("Starting new round...");
         }
     }
 
-    const checkWinCondition = () => {
-        const currentBoard = board.printBoard();
+
+    //Runs anytime a tile is clicked
+
+    const playRound = (column, row) => {
+        const cell = Cell();
+
+        //Place player mark on desired column and row
+        console.log(`Marking ${column},${row} with ${getActivePlayer().name}'s mark: ${getActivePlayer().mark}`);
+        let validMove = board.placeMarker(column, row, getActivePlayer().mark)
+
+        //Check whether the desired column and row are available
+        if (validMove === true){
+
+            //Set color of marker
+            cell.setColor(row, column, getActivePlayer().name)
+
+            //Switch turn
+            switchPlayerTurn();    
+        }
+
+        //Generate new board
+        printNewRound();
+    }
+
+    const resetScreen = () => {
+        console.log("\nResetting screen")
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => {
+        cell.textContent = '';
+        })
+    }
+
+
+
+     //Checks to see whehter a player has made 3 of a row horizontally, vertically, or diagonally
+
+     const checkWinCondition = (currentBoard) => {
         //Check for horizontal win conditions
         for (let row = 0; row < 3; row++) {
             if (currentBoard[row][0] === currentBoard[row][1] && currentBoard[row][1] === currentBoard[row][2] && currentBoard[row][0] !== '') {
+                
                 console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
                 return true;
             }
@@ -166,36 +201,11 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         return false;
     }
 
-    const playRound = (column, row) => {
-
-        //Place player mark on desired column and row
-        console.log(`Marking ${column},${row} with ${getActivePlayer().name}'s mark: ${getActivePlayer().mark}`);
-        let validMove = board.placeMarker(column, row, getActivePlayer().mark)
-
-        
-
-        //Set color of marker
-        const cell = Cell();
-        cell.setColor(row, column, getActivePlayer().name)
-
-        
-
-        //Check whether the desired column and row are available, do not switch turns
-        //on an invalid move
-        if (validMove === true){
-            //Switch turn
-            switchPlayerTurn();    
-        }
-
-        printNewRound();
-
-    }
-
 
     //Initial boot display
     printNewRound();
 
-    return { playRound, getActivePlayer, getBoard: board.getBoard};
+    return { playRound, getActivePlayer, checkWinCondition, getBoard: board.getBoard};
 }
 
 
@@ -209,15 +219,19 @@ function ScreenController() {
     const activePlayerDiv = document.querySelector('#active-player');
     const boardDiv = document.querySelector('.grid');
 
+
+    //Runs after the round has been played, updates current information
     const updateScreen = (column, row) => {
 
         //Get updated board and player turn
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
+
+        //Display the current turn
         activePlayerDiv.textContent = `${activePlayer.name}'s turn`;
 
+        //Gets the cell index and sets the text content equal to the console array value
         const cell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
-
         cell.textContent = board[row][column].getValue();
     }
 
@@ -225,23 +239,22 @@ function ScreenController() {
         //Store the selected row and column in constants
         const selectedColumn = e.target.dataset.column;
         const selectedRow = e.target.dataset.row;
+        
 
         if (!selectedColumn || !selectedRow) return;
 
         //Play a round on click
         game.playRound(selectedRow, selectedColumn);
-
-        updateScreen(selectedColumn, selectedRow);
-    }
-
-    const clearScreen = () => {
         
+        //Update the screen with current information
+        updateScreen(selectedColumn, selectedRow);
     }
 
     boardDiv.addEventListener('click', clickHandler);
 
     updateScreen();
 
+    return {resetScreen}
 }
 
 ScreenController();
