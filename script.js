@@ -43,8 +43,14 @@ function Gameboard() {
         return boardwithCellValues;
     }
 
+    const clearBoard = () => {
+        const clearBoard = board.map((row) => row.map((cell) => cell.textContent = ''))
+        console.log(clearBoard);
+        return clearBoard;
+    }
+
     //Provide interactable interface for application
-    return { getBoard, placeMarker, printBoard };
+    return { getBoard, placeMarker, printBoard, clearBoard};
 }
 
 
@@ -158,6 +164,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
         if (playerWon === true) {
             console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+            board.clearBoard();
             return;
         }
 
@@ -212,6 +219,10 @@ function ScreenController() {
         const activePlayer = game.getActivePlayer()
 
         updateScreen(selectedColumn, selectedRow);
+    }
+
+    const clearScreen = () => {
+        
     }
 
     boardDiv.addEventListener('click', clickHandler);
