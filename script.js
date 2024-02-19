@@ -37,10 +37,14 @@ function Gameboard() {
     }
 
     //Prints the board to the console after each players turn
-    const printBoard = () => {
-        const boardwithCellValues = board.map((row) => row.map((cell) => cell.getValue()));
-        console.log(boardwithCellValues);
-        return boardwithCellValues;
+    const printBoard = (playerWon) => {
+        return playerWon === true ?
+         board.map((row) => row.map((cell) => cell.textContent = '')):
+         board.map((row) => row.map((cell) => cell.getValue()));
+
+        //const boardwithCellValues = 
+        //console.log(boardwithCellValues);
+        //return boardwithCellValues;
     }
 
     const clearBoard = () => {
@@ -117,8 +121,9 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Will be used for console declaration and later for UI 
     const getActivePlayer = () => activePlayer;
 
-    const printNewRound = () => {
-        board.printBoard();
+    const printNewRound = (playerWon) => {
+        let currentBoard = board.printBoard(playerWon);
+        console.log(currentBoard)
         console.log(`${getActivePlayer().name}'s turn.`)
     }
 
@@ -154,9 +159,8 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         let validMove = board.placeMarker(column, row, getActivePlayer().mark)
         
 
-        //Check whether a player has won, break if they have
+        //Check whether a player has won
         let playerWon = checkWinCondition();
-        console.log(playerWon)
 
         //Set color of marker
         const cell = Cell();
@@ -164,8 +168,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
         if (playerWon === true) {
             console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
-            board.clearBoard();
-            return;
+            //board.clearBoard();
         }
 
         //Check whether the desired column and row are available, do not switch turns
@@ -175,7 +178,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
             switchPlayerTurn();    
         }
 
-        printNewRound();
+        printNewRound(playerWon);
 
     }
 
@@ -207,6 +210,7 @@ function ScreenController() {
     }
 
     function clickHandler(e) {
+        //Store the selected row and column in constants
         const selectedColumn = e.target.dataset.column;
         const selectedRow = e.target.dataset.row;
 
@@ -214,9 +218,6 @@ function ScreenController() {
 
         //Play a round on click
         game.playRound(selectedRow, selectedColumn);
-
-        //Set color
-        const activePlayer = game.getActivePlayer()
 
         updateScreen(selectedColumn, selectedRow);
     }
