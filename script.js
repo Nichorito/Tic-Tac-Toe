@@ -5,7 +5,7 @@
 */
 
 function Gameboard() {
-    const board = [];
+    let board = [];
     const rows = 3;
     const columns = 3;
 
@@ -35,16 +35,22 @@ function Gameboard() {
         };
     }
 
-    //Prints the board to the console after each players turn
-    const printBoard = (playerWon) => {
-        return playerWon === true ?
-         board.map((row) => row.map((cell) => cell.textContent = '')):
-         board.map((row) => row.map((cell) => cell.getValue()));
+    const resetBoard = () => {
+        board.forEach(row => row.forEach(cell => cell.addMarker('')));
+    }
 
+    //Prints the board to the console after each players turn
+    const printBoard = () => {
+        let boardWithCellValues = board.map(row => row.map(cell => cell.getValue()));
+        console.log(boardWithCellValues)
+        return boardWithCellValues;
+    }
+         
+        
         //const boardwithCellValues = 
         //console.log(boardwithCellValues);
         //return boardwithCellValues;
-    }
+    
 
     /*const clearBoard = () => {
         const clearBoard = board.map((row) => row.map((cell) => cell.textContent = ''))
@@ -53,7 +59,7 @@ function Gameboard() {
     }*/
 
     //Provide interface for application
-    return { getBoard, placeMarker, printBoard};
+    return { getBoard, placeMarker, printBoard, resetBoard};
 }
 
 
@@ -68,7 +74,7 @@ function Gameboard() {
 */
 
 function Cell() {
-    let value = '';
+    let value = ' ';
 
     const setColor = (column, row, activePlayer) => {
         const selectedCell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
@@ -121,26 +127,19 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     const getActivePlayer = () => activePlayer;
 
     const printNewRound = () => {
-        console.log(`\n\n${getActivePlayer().name}'s turn.`)
+        console.log(`\n\n${getActivePlayer().name}'s turn.`);
+        board.printBoard();
 
-        let currentBoard = board.printBoard(false);
-
-        console.log(currentBoard)
-
-        //Check whether a player has won
-        let playerWon = checkWinCondition(currentBoard);
-
-        playerWon === true ? console.log("A player has won") : console.log("no one has won")
-        
-        currentBoard = board.printBoard(playerWon);
-
-        checkWinCondition(currentBoard)
-
-        console.log(currentBoard)
-        
+        const playerWon = checkWinCondition();
+        if (playerWon) {
+            console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+            board.resetBoard();
+            console.log("Starting new round...");
+        }
     }
 
-    const checkWinCondition = (currentBoard) => {
+    const checkWinCondition = () => {
+        const currentBoard = board.printBoard();
         //Check for horizontal win conditions
         for (let row = 0; row < 3; row++) {
             if (currentBoard[row][0] === currentBoard[row][1] && currentBoard[row][1] === currentBoard[row][2] && currentBoard[row][0] !== '') {
@@ -199,14 +198,18 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     return { playRound, getActivePlayer, getBoard: board.getBoard};
 }
 
+
+
+/////////////////////
+//SCREEN CONTROLLER//
+/////////////////////
+
 function ScreenController() {
     const game = GameController();
     const activePlayerDiv = document.querySelector('#active-player');
     const boardDiv = document.querySelector('.grid');
 
     const updateScreen = (column, row) => {
-        //Clear Grid
-        //boardDiv.textContent='';
 
         //Get updated board and player turn
         const board = game.getBoard();
@@ -216,7 +219,6 @@ function ScreenController() {
         const cell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
 
         cell.textContent = board[row][column].getValue();
-        
     }
 
     function clickHandler(e) {
