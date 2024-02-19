@@ -24,7 +24,6 @@ function Gameboard() {
     // Checks whether the column and row the player chose is available and 
     // if it is, placer a marker there
     const placeMarker = (column, row, player) => {
-        console.log(board[column][row])
         if (board[column][row].getValue() === '') {
             console.log("Valid Move")
             board[column][row].addMarker(player) 
@@ -47,14 +46,14 @@ function Gameboard() {
         //return boardwithCellValues;
     }
 
-    const clearBoard = () => {
+    /*const clearBoard = () => {
         const clearBoard = board.map((row) => row.map((cell) => cell.textContent = ''))
         console.log(clearBoard);
         return clearBoard;
-    }
+    }*/
 
-    //Provide interactable interface for application
-    return { getBoard, placeMarker, printBoard, clearBoard};
+    //Provide interface for application
+    return { getBoard, placeMarker, printBoard};
 }
 
 
@@ -121,17 +120,31 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Will be used for console declaration and later for UI 
     const getActivePlayer = () => activePlayer;
 
-    const printNewRound = (playerWon) => {
-        let currentBoard = board.printBoard(playerWon);
+    const printNewRound = () => {
+        console.log(`\n\n${getActivePlayer().name}'s turn.`)
+
+        let currentBoard = board.printBoard(false);
+
         console.log(currentBoard)
-        console.log(`${getActivePlayer().name}'s turn.`)
+
+        //Check whether a player has won
+        let playerWon = checkWinCondition(currentBoard);
+
+        playerWon === true ? console.log("A player has won") : console.log("no one has won")
+        
+        currentBoard = board.printBoard(playerWon);
+
+        checkWinCondition(currentBoard)
+
+        console.log(currentBoard)
+        
     }
 
-    const checkWinCondition = () => {
-        const currentBoard = board.printBoard();
+    const checkWinCondition = (currentBoard) => {
         //Check for horizontal win conditions
         for (let row = 0; row < 3; row++) {
             if (currentBoard[row][0] === currentBoard[row][1] && currentBoard[row][1] === currentBoard[row][2] && currentBoard[row][0] !== '') {
+                console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
                 return true;
             }
         }
@@ -139,6 +152,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         //Check for vertical win conditions
         for (let col = 0; col < 3; col++) {
             if (currentBoard[0][col] === currentBoard[1][col] && currentBoard[1][col] === currentBoard[2][col] && currentBoard[0][col] !== '') {
+                console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
                 return true;
             }
         }
@@ -146,7 +160,8 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         //Check for diagonal win conditions
         if ((currentBoard[0][0] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][2] && currentBoard[0][0] !== '') ||
             (currentBoard[0][2] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][0] && currentBoard[0][2] !== '')) {
-            return true;
+                console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+                return true;
         }
 
         return false;
@@ -157,19 +172,14 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         //Place player mark on desired column and row
         console.log(`Marking ${column},${row} with ${getActivePlayer().name}'s mark: ${getActivePlayer().mark}`);
         let validMove = board.placeMarker(column, row, getActivePlayer().mark)
-        
 
-        //Check whether a player has won
-        let playerWon = checkWinCondition();
+        
 
         //Set color of marker
         const cell = Cell();
         cell.setColor(row, column, getActivePlayer().name)
 
-        if (playerWon === true) {
-            console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
-            //board.clearBoard();
-        }
+        
 
         //Check whether the desired column and row are available, do not switch turns
         //on an invalid move
@@ -178,7 +188,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
             switchPlayerTurn();    
         }
 
-        printNewRound(playerWon);
+        printNewRound();
 
     }
 
