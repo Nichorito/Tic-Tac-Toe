@@ -166,6 +166,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         const cells = document.querySelectorAll('.cell');
         cells.forEach(cell => {
         cell.textContent = '';
+        cell.className = 'cell';
         })
     }
 
