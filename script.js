@@ -125,16 +125,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
     const printNewRound = () => {
         console.log(`\n\n${getActivePlayer().name}'s turn.`);
-        const currentBoard = board.printBoard();
-
-        const playerWon = checkWinCondition(currentBoard);
-        console.log(playerWon)
-
-        if (playerWon == true) {
-            board.resetBoard();
-            resetScreen();
-            console.log("Starting new round...");
-        }
+        board.printBoard();
     }
 
 
@@ -145,6 +136,10 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
         //Place player mark on desired column and row
         console.log(`Marking ${column},${row} with ${getActivePlayer().name}'s mark: ${getActivePlayer().mark}`);
+
+        //Generate new board
+        printNewRound();
+
         let validMove = board.placeMarker(column, row, getActivePlayer().mark)
 
         //Check whether the desired column and row are available
@@ -153,12 +148,18 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
             //Set color of marker
             cell.setColor(row, column, getActivePlayer().name)
 
+            const currentBoard = board.printBoard();
+            const playerWon = checkWinCondition(currentBoard);
+
+            if (playerWon == true) {
+                board.resetBoard();
+                resetScreen();
+                console.log("Starting new round...");
+            }
+
             //Switch turn
             switchPlayerTurn();    
         }
-
-        //Generate new board
-        printNewRound();
     }
 
     const resetScreen = () => {
@@ -169,7 +170,6 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         cell.className = 'cell';
         })
     }
-
 
 
      //Checks to see whehter a player has made 3 of a row horizontally, vertically, or diagonally
