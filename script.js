@@ -101,11 +101,13 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     const players = [
         {
             name: playerOneName,
-            mark: "X" 
+            mark: "X",
+            score: 0
         },
         {
             name: playerTwoName,
-            mark: "O"
+            mark: "O",
+            score: 0
         }
     ];
 
@@ -118,6 +120,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Will be used for console declaration and later for UI 
     const getActivePlayer = () => activePlayer;
 
+    const incrementScore = () => activePlayer.score++
 
 
     //Creates an updated board within the console, checks if a player has won,
@@ -152,6 +155,8 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
             const playerWon = checkWinCondition(currentBoard);
 
             if (playerWon == true) {
+                incrementScore();
+                console.log("Nicholas' score is " + players[0].score + ". Guest score is " + players[1].score)
                 board.resetBoard();
                 resetScreen();
                 console.log("Starting new round...");
@@ -178,7 +183,6 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         //Check for horizontal win conditions
         for (let row = 0; row < 3; row++) {
             if (currentBoard[row][0] === currentBoard[row][1] && currentBoard[row][1] === currentBoard[row][2] && currentBoard[row][0] !== '') {
-                
                 console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
                 return true;
             }
