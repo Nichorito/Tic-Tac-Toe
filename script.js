@@ -120,7 +120,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Will be used for console declaration and later for UI 
     const getActivePlayer = () => activePlayer;
 
-    const incrementScore = () => activePlayer.score++
+    const incrementScore = () => {activePlayer.score++}
 
 
     //Creates an updated board within the console, checks if a player has won,
@@ -210,7 +210,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, getActivePlayer, checkWinCondition, getBoard: board.getBoard};
+    return { playRound, getActivePlayer, checkWinCondition, players, getBoard: board.getBoard};
 }
 
 
@@ -223,7 +223,8 @@ function ScreenController() {
     const game = GameController();
     const activePlayerDiv = document.querySelector('#active-player');
     const boardDiv = document.querySelector('.grid');
-
+    const playerOneScore = document.querySelector('#player1-score');
+    const playerTwoScore = document.querySelector('#player2-score');
 
     //Runs after the round has been played, updates current information
     const updateScreen = (column, row) => {
@@ -231,9 +232,13 @@ function ScreenController() {
         //Get updated board and player turn
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
-
+        const players = game.players;
+        
         //Display the current turn
         activePlayerDiv.textContent = `${activePlayer.name}'s turn`;
+
+        playerOneScore.textContent = players[0].score;
+        playerTwoScore.textContent = players[1].score;
 
         //Gets the cell index and sets the text content equal to the console array value
         const cell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
