@@ -61,7 +61,7 @@ function Gameboard() {
 ** A cell represents a square on the 3x3 grid and can be marked by:
 ** - : Blank square,
 ** 1 : Player one's mark,
-** O2 : Player two's mark 
+** O2 : Player two's mark
 */
 
 function Cell() {
@@ -81,9 +81,6 @@ function Cell() {
 
     return { addMarker, getValue, setColor };
 }
-
-
-
 
 
 
@@ -156,7 +153,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
             if (playerWon == true) {
                 incrementScore();
-                console.log("Nicholas' score is " + players[0].score + ". Guest score is " + players[1].score)
+                console.log("Nicholas' score is " + players[0].score + ". Guest score is " + players[1].score);
                 board.resetBoard();
                 resetScreen();
                 console.log("Starting new round...");
@@ -221,10 +218,20 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
 function ScreenController() {
     const game = GameController();
+    const players = game.players;
+
     const activePlayerDiv = document.querySelector('#active-player');
     const boardDiv = document.querySelector('.grid');
+
     const playerOneScore = document.querySelector('#player1-score');
     const playerTwoScore = document.querySelector('#player2-score');
+    const playerOneName = document.querySelector('#player-1');
+    const playerTwoName = document.querySelector('#player-2');
+
+    const updateName = () => {
+        //playerOneName.textContent = players[0].name;
+        //playerTwoName.textContent = players[1].name;
+    }
 
     //Runs after the round has been played, updates current information
     const updateScreen = (column, row) => {
@@ -232,13 +239,16 @@ function ScreenController() {
         //Get updated board and player turn
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
-        const players = game.players;
         
         //Display the current turn
         activePlayerDiv.textContent = `${activePlayer.name}'s turn`;
 
+        //Update player score display after each round
         playerOneScore.textContent = players[0].score;
         playerTwoScore.textContent = players[1].score;
+
+        playerOneName.textContent = players[0].name.toUpperCase();
+        playerTwoName.textContent = players[1].name.toUpperCase();
 
         //Gets the cell index and sets the text content equal to the console array value
         const cell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);

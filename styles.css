@@ -80,6 +80,31 @@ h1 {
     color: #4f8a9d;
 }
 
+.name-container {
+    display: flex;
+}
+
+#edit-player1-name {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    padding-bottom: 1.4rem;
+    padding-right: 20px;
+    font-size: 2.5rem;
+    opacity: 50%;
+    cursor: pointer;
+}
+
+#edit-player2-name {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    padding-bottom: 1.4rem;
+    padding-left: 20px;
+    font-size: 2.5rem;
+    opacity: 50%;
+}
 
 
 /* ////////// CENTER AREA /////////*/
