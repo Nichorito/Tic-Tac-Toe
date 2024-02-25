@@ -110,8 +110,8 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
     //Receive the name DOM element from screenController as newName, set player name
     //to the passed variable
-    const setPlayerName = (newName) => {
-        activePlayer.name = newName;
+    const setPlayerName = (newName, playerNumber) => {
+        players[playerNumber].name = newName;
     };
 
     let activePlayer = players[0];
@@ -213,7 +213,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, getActivePlayer, checkWinCondition, players, getBoard: board.getBoard};
+    return { playRound, getActivePlayer, checkWinCondition, setPlayerName, players, getBoard: board.getBoard};
 }
 
 
@@ -236,8 +236,28 @@ function ScreenController() {
     
 
     const updateName = (playerNumber) => {
+        
         if (playerNumber === 1) {
-            
+            let openOrClosed;
+            openOrClosed = openOrClosed === false ? true : false
+
+            const playerInput = document.querySelector('#player1-input');
+            playerInput.style.display = playerInput.style.display === "none" ? 'block' : 'none';
+            game.setPlayerName(playerInput.value, 0);
+            if (openOrClosed === false){
+                const playerNameElement = document.querySelector('#player-1');
+                playerNameElement.textContent = playerInput.value.toUpperCase();
+            }
+        }
+        else if (playerNumber === 2) {
+            let openOrClosed;
+            const playerInput = document.querySelector('#player2-input');
+            playerInput.style.display = playerInput.style.display === "none" ? 'block' : 'none';
+            game.setPlayerName(playerInput.value, 1)
+            if (openOrClosed === false){
+                const playerNameElement = document.querySelector('#player-2');
+                playerNameElement.textContent = playerInput.value.toUpperCase();
+            }layerNameElement.textContent = playerInput.value.toUpperCase();
         }
     }
 
@@ -282,8 +302,13 @@ function ScreenController() {
 
 
     //When an edit button is clicked tell the edit function which button has been clicked
-    document.querySelector('#edit-player1-name').addEventListener('click', editPlayerName(1));
-    document.querySelector('#edit-player2-name').addEventListener('click', editPlayerName(2));
+    document.querySelector('#edit-player1-name').addEventListener('click', function() {
+        updateName(1);
+    });
+    
+    document.querySelector('#edit-player2-name').addEventListener('click', function() {
+        updateName(2);
+    });
 
     updateScreen();
 
