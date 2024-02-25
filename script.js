@@ -237,6 +237,7 @@ function ScreenController() {
 
     const updateName = (playerNumber) => {
         
+        //Edit player 1 name
         if (playerNumber === 1) {
             let openOrClosed;
             openOrClosed = openOrClosed === false ? true : false
@@ -244,6 +245,8 @@ function ScreenController() {
             const playerInput = document.querySelector('#player1-input');
             playerInput.style.display = playerInput.style.display === "none" ? 'block' : 'none';
             game.setPlayerName(playerInput.value, 0);
+
+            //Change name upon closing
             if (openOrClosed === false){
                 const playerNameElement = document.querySelector('#player-1');
                 playerNameElement.textContent = playerInput.value.toUpperCase();
@@ -251,13 +254,17 @@ function ScreenController() {
         }
         else if (playerNumber === 2) {
             let openOrClosed;
+            openOrClosed = openOrClosed === false ? true : false
+
             const playerInput = document.querySelector('#player2-input');
             playerInput.style.display = playerInput.style.display === "none" ? 'block' : 'none';
             game.setPlayerName(playerInput.value, 1)
+
+            //Change name upon closing
             if (openOrClosed === false){
                 const playerNameElement = document.querySelector('#player-2');
                 playerNameElement.textContent = playerInput.value.toUpperCase();
-            }layerNameElement.textContent = playerInput.value.toUpperCase();
+            }
         }
     }
 

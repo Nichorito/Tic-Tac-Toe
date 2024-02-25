@@ -87,6 +87,9 @@ h1 {
 
 #edit-player1-name {
     display: flex;
+    position: absolute;
+    bottom: 0px;
+    left: -50px;
     flex-direction: column;
     justify-content: end;
     padding-bottom: 1.4rem;
@@ -97,8 +100,11 @@ h1 {
 }
 
 #edit-player2-name {
+    bottom: 0;
+    position: absolute;
     cursor: pointer;
     display: flex;
+    right: -50px;
     flex-direction: column;
     justify-content: end;
     padding-bottom: 1.4rem;
