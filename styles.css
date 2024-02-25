@@ -82,6 +82,7 @@ h1 {
 
 .name-container {
     display: flex;
+    position: relative;
 }
 
 #edit-player1-name {
@@ -106,6 +107,25 @@ h1 {
     opacity: 50%;
 }
 
+
+/*//////////////////////////
+/////// NAME EDITOR ////////
+//////////////////////////*/
+
+input {
+    position: absolute;
+    bottom: 25px;
+    width: 85%;
+    height: 30%;
+    font-size: 2.5rem;
+    font-family: "Coiny", system-ui;
+    border-radius: .5rem;
+    border: 1px solid rgba(0, 0, 0, 0.432);
+}
+
+#player1-input {
+    margin-left: 15%;
+}
 
 /* ////////// CENTER AREA /////////*/
 
@@ -169,7 +189,10 @@ h1 {
     font-weight: 400;
     font-style: normal;
     text-shadow: 0px 4px 1px black;
+}
 
+.cell:hover {
+    cursor: pointer;
 }
 
 /*// Open Border Styling */
@@ -217,3 +240,5 @@ h1 {
 .Guest {
     color: #4f8a9d;
 }
+
+

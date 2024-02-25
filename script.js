@@ -108,6 +108,12 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         }
     ];
 
+    //Receive the name DOM element from screenController as newName, set player name
+    //to the passed variable
+    const setPlayerName = (newName) => {
+        activePlayer.name = newName;
+    };
+
     let activePlayer = players[0];
 
     const switchPlayerTurn = () => {
@@ -117,7 +123,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Will be used for console declaration and later for UI 
     const getActivePlayer = () => activePlayer;
 
-    const incrementScore = () => {activePlayer.score++}
+    const incrementScore = () => activePlayer.score++
 
 
     //Creates an updated board within the console, checks if a player has won,
@@ -227,10 +233,12 @@ function ScreenController() {
     const playerTwoScore = document.querySelector('#player2-score');
     const playerOneName = document.querySelector('#player-1');
     const playerTwoName = document.querySelector('#player-2');
+    
 
-    const updateName = () => {
-        //playerOneName.textContent = players[0].name;
-        //playerTwoName.textContent = players[1].name;
+    const updateName = (playerNumber) => {
+        if (playerNumber === 1) {
+            
+        }
     }
 
     //Runs after the round has been played, updates current information
@@ -271,6 +279,11 @@ function ScreenController() {
     }
 
     boardDiv.addEventListener('click', clickHandler);
+
+
+    //When an edit button is clicked tell the edit function which button has been clicked
+    document.querySelector('#edit-player1-name').addEventListener('click', editPlayerName(1));
+    document.querySelector('#edit-player2-name').addEventListener('click', editPlayerName(2));
 
     updateScreen();
 
