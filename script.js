@@ -159,10 +159,8 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
             if (playerWon == true) {
                 incrementScore();
-                console.log("Nicholas' score is " + players[0].score + ". Guest score is " + players[1].score);
-                board.resetBoard();
-                resetScreen();
-                console.log("Starting new round...");
+                console.log("Nicholas' score is " + players[0].score + ". Guest score is " + players[1].score);              
+                return;
             }
 
             //Switch turn
@@ -172,6 +170,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
     const resetScreen = () => {
         console.log("\nResetting screen")
+        board.resetBoard();
         const cells = document.querySelectorAll('.cell');
         cells.forEach(cell => {
         cell.textContent = '';
@@ -213,7 +212,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, getActivePlayer, checkWinCondition, setPlayerName, players, getBoard: board.getBoard};
+    return { playRound, resetScreen, getActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard};
 }
 
 
@@ -223,6 +222,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 /////////////////////
 
 function ScreenController() {
+    //Brings in all game functions to be tied into UI elements
     const game = GameController();
     const players = game.players;
 
@@ -233,7 +233,10 @@ function ScreenController() {
     const playerTwoScore = document.querySelector('#player2-score');
     const playerOneName = document.querySelector('#player-1');
     const playerTwoName = document.querySelector('#player-2');
+
+    const newGameButton = document.querySelector('#new-game');
     
+    let gameInProgress = true;
 
     const updateName = (playerNumber) => {
         
@@ -273,8 +276,10 @@ function ScreenController() {
 
         //Get updated board and player turn
         const board = game.getBoard();
+        const currentBoard = game.printBoard();
+        const playerWon = game.checkWinCondition(currentBoard);
         const activePlayer = game.getActivePlayer();
-        
+
         //Display the current turn
         activePlayerDiv.textContent = `${activePlayer.name}'s turn`;
 
@@ -282,15 +287,30 @@ function ScreenController() {
         playerOneScore.textContent = players[0].score;
         playerTwoScore.textContent = players[1].score;
 
+        //Update players names when changed
         playerOneName.textContent = players[0].name.toUpperCase();
         playerTwoName.textContent = players[1].name.toUpperCase();
 
         //Gets the cell index and sets the text content equal to the console array value
         const cell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
         cell.textContent = board[row][column].getValue();
+    
+        if (playerWon === true){
+            //Display the winner
+            activePlayerDiv.textContent = `${activePlayer.name} Wins!`;
+
+            //Disable the flow of the game
+            gameInProgress = false;
+
+            //Display new game button
+            newGameButton.style.display = 'block';
+        }
+        
     }
 
     function clickHandler(e) {
+        if (!gameInProgress) return;
+
         //Store the selected row and column in constants
         const selectedColumn = e.target.dataset.column;
         const selectedRow = e.target.dataset.row;
@@ -308,6 +328,10 @@ function ScreenController() {
     boardDiv.addEventListener('click', clickHandler);
 
 
+    function displayWinner() {
+
+    }
+
     //When an edit button is clicked tell the edit function which button has been clicked
     document.querySelector('#edit-player1-name').addEventListener('click', function() {
         updateName(1);
@@ -317,9 +341,28 @@ function ScreenController() {
         updateName(2);
     });
 
+    //Reset the screen when the new game button is clicked
+    newGameButton.addEventListener('click', function() {
+        const activePlayer = game.getActivePlayer();
+
+        //Make tiles clickable again
+        gameInProgress = true;
+        //Reset the screen
+        game.resetScreen();
+
+        newGameButton.style.display = 'none';
+        game.switchPlayerTurn();
+        console.log(activePlayer.name);
+        activePlayerDiv.textContent = `${activePlayer.name}'s turn`;
+        console.log("Starting new round...");
+
+        //Refresh the screen
+        updateScreen();
+    });
+
     updateScreen();
 
-    return {resetScreen}
+    return {displayWinner}
 }
 
 ScreenController();
