@@ -89,7 +89,7 @@ function Cell() {
 ** It also determines when the game is over and increments winning players score
 */
 
-function GameController(playerOneName = "Player 1", playerTwoName = "Player 2") {
+function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
     //Create the board and screen
     const board = Gameboard();
