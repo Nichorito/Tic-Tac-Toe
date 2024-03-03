@@ -269,6 +269,8 @@ function ScreenController() {
                 playerNameElement.textContent = playerInput.value.toUpperCase();
             }
         }
+        
+        updateScreen();
     }
 
     //Runs after the round has been played, updates current information
