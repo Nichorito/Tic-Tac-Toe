@@ -117,6 +117,9 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
     const switchPlayerTurn = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
+        if (activePlayer === players[1]) {
+            setTimeout(() => AIMove(), 500); // Use an arrow function to delay the call
+        }
     }
 
     //Will be used for console declaration and later for UI 
@@ -163,13 +166,36 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
             }
 
             //Switch turn
-            switchPlayerTurn();  
+            switchPlayerTurn();
             return true; 
         }
         else {
             return false;
         }
     }
+
+    let updateScreenCallback;
+
+    const setUpdateScreen = (callback) => {
+        updateScreenCallback = callback; // Set the callback
+    };
+
+    const AIMove = () => {
+        let validMove = false;
+        let column, row;
+    
+        while (!validMove) {
+            column = Math.floor(Math.random() * 3); // 0 to 2 for columns
+            row = Math.floor(Math.random() * 3); // 0 to 2 for rows
+    
+            console.log(`AI is attempting to place a mark at ${column},${row}`);
+            validMove = playRound(column, row); // Attempt to play the round and check if valid
+        }
+    
+        console.log(`AI has placed a mark at ${column},${row}`);
+        updateScreenCallback(column, row);
+        return {column, row}
+    };
 
     const resetScreen = () => {
         console.log("\nResetting screen")
@@ -214,7 +240,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, resetScreen, getActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard };
+    return { playRound, AIMove, setUpdateScreen, resetScreen, getActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard };
     
 }
 
@@ -228,7 +254,6 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 function ScreenController() {
     const game = GameController();
     const players = game.players;
-    const AI = AIController();
     
 
     //Get HTML elements and store as variables
@@ -301,9 +326,13 @@ function ScreenController() {
         playerOneName.textContent = players[0].name.toUpperCase();
         playerTwoName.textContent = players[1].name.toUpperCase();
 
-        //Gets the cell index and sets the text content equal to the console array value
-        const cell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
-        cell.textContent = board[row][column].getValue();
+        // Loop through the currentBoard and update each cell
+        for (let row = 0; row < 3; row++) {
+            for (let column = 0; column < 3; column++) {
+                const cell = document.querySelector(`[data-column="${column}"][data-row="${row}"]`);
+                cell.textContent = board[row][column].getValue(); // Assuming getValue() returns the marker (X, O or empty string)
+            }
+        }
     
         if (playerWon === true){
             //Display the winner
@@ -314,16 +343,7 @@ function ScreenController() {
 
             //Display new game button
             newGameButton.style.display = 'block';
-        }
-        else {
-            console.log(`AI is active? ${AI.AIActive}`)
-            if (activePlayer === players[1]) {
-                const cellData = AI.cellSelector();
-                updateScreen(cellData[0], cellData[1]);
-                console.log("Updating screen after AI move")
-            }
-        }
-        
+        }        
     }
 
     function clickHandler(e) {
@@ -386,36 +406,11 @@ function ScreenController() {
         updateScreen();
     });
 
+    game.setUpdateScreen(updateScreen)
+
     updateScreen();
 
-    return {displayWinner}
-}
-
-//////////////////////
-//        AI        //
-//////////////////////
-
-function AIController() {
-    const game = GameController();
-
-    const cellSelector = () => {
-        let validMove = false;
-        let column, row;
-    
-        while (!validMove) {
-            column = Math.floor(Math.random() * 3); // 0 to 2 for columns
-            row = Math.floor(Math.random() * 3); // 0 to 2 for rows
-    
-            console.log(`AI is attempting to place a mark at ${column},${row}`);
-            validMove = game.playRound(column, row); // Attempt to play the round and check if valid
-        }
-    
-        console.log(`AI has placed a mark at ${column},${row}`);
-        return {column, row}
-    };
-    
-
-    return { cellSelector };
+    return {displayWinner, updateScreen }
 }
 
 ScreenController();
