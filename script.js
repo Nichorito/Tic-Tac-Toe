@@ -115,6 +115,10 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Logic for switching turns
     let activePlayer = players[0];
 
+    const setActivePlayer = (playerNumber) => {
+        activePlayer = players[playerNumber];
+    };
+
     const switchPlayerTurn = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
         if (activePlayer === players[1]) {
@@ -126,6 +130,11 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     const getActivePlayer = () => activePlayer;
 
     const incrementScore = () => activePlayer.score++;
+
+    const resetScore = () => {
+        players[0].score = 0;
+        players[1].score = 0;
+    }
 
 
     //Creates an updated board within the console, checks if a player has won,
@@ -243,7 +252,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, AIMove, setUpdateScreen, clearGrid, getActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard };
+    return { playRound, AIMove, setUpdateScreen, clearGrid, resetScore, getActivePlayer, setActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard };
     
 }
 
@@ -372,7 +381,7 @@ function ScreenController() {
         // Toggle the AI on or off
         AIbutton.value = AIbutton.value === "true" ? "false" : "true";
 
-        //game.activePlayer == players[1];
+        game.setActivePlayer(0);
 
         // Change button color based on AI state
         if (AIbutton.value === "true"){
@@ -386,7 +395,9 @@ function ScreenController() {
             AIbutton.style.color = "black"
         }
         // Reset board when AI is toggled
+        game.resetScore();
         game.clearGrid();
+        updateScreen();
     });
 
     boardDiv.addEventListener('click', clickHandler);
