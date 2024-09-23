@@ -118,7 +118,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     const switchPlayerTurn = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
         if (activePlayer === players[1]) {
-            setTimeout(() => AIMove(), 500); // Use an arrow function to delay the call
+            setTimeout(() => AIMove(), 750); // Use an arrow function to delay the call
         }
     }
 
