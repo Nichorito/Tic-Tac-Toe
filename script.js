@@ -384,15 +384,13 @@ function ScreenController() {
         game.setActivePlayer(0);
 
         // Change button color based on AI state
-        if (AIbutton.value === "true"){
-            AIbutton.style.backgroundColor = "blue";
-            AIbutton.textContent = "2 Player?"
-            AIbutton.style.color = "white"
+        if (AIbutton.value === "false"){
+            AIbutton.textContent = "2 PLAYER"
+            AIbutton.style.color = "#FBF5E6"
         }
         else {
-            AIbutton.style.backgroundColor = "red";
-            AIbutton.textContent = "AI?"
-            AIbutton.style.color = "black"
+            AIbutton.textContent = "AI"
+            AIbutton.style.color = "#FBF5E6"
         }
         // Reset board when AI is toggled
         game.resetScore();
