@@ -200,7 +200,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         }
     };
 
-    const resetScreen = () => {
+    const clearGrid = () => {
         console.log("\nResetting screen")
         board.resetBoard();
         const cells = document.querySelectorAll('.cell');
@@ -243,7 +243,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, AIMove, setUpdateScreen, resetScreen, getActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard };
+    return { playRound, AIMove, setUpdateScreen, clearGrid, getActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard };
     
 }
 
@@ -291,6 +291,7 @@ function ScreenController() {
                 playerNameElement.textContent = playerInput.value.toUpperCase();
             }
         }
+        //Edit player 2 name
         else if (playerNumber === 2) {
             let openOrClosed;
             openOrClosed = openOrClosed === false ? true : false
@@ -366,17 +367,26 @@ function ScreenController() {
         updateScreen(selectedColumn, selectedRow);
     }
 
+    //Toggle AI on and off
     AIbutton.addEventListener('click', () => {
         // Toggle the AI on or off
-        AIbutton.value = "false" ? "true" : "false";
+        AIbutton.value = AIbutton.value === "true" ? "false" : "true";
 
-        const AIActive = AIbutton.value === "true";  // Convert the string to a Boolean
-        console.log("AI is active? " + AIActive);
+        //game.activePlayer == players[1];
 
         // Change button color based on AI state
-        AIbutton.style.backgroundColor = AIbutton.value ? "blue" : "red";
+        if (AIbutton.value === "true"){
+            AIbutton.style.backgroundColor = "blue";
+            AIbutton.textContent = "2 Player?"
+            AIbutton.style.color = "white"
+        }
+        else {
+            AIbutton.style.backgroundColor = "red";
+            AIbutton.textContent = "AI?"
+            AIbutton.style.color = "black"
+        }
         // Reset board when AI is toggled
-        game.resetScreen();
+        game.clearGrid();
     });
 
     boardDiv.addEventListener('click', clickHandler);
@@ -397,7 +407,7 @@ function ScreenController() {
         //Make tiles clickable again
         gameInProgress = true;
         //Reset the screen
-        game.resetScreen();
+        game.clearGrid();
 
         newGameButton.style.display = 'none';
         game.switchPlayerTurn();
