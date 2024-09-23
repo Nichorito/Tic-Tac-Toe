@@ -105,7 +105,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
             score: 0
         }
     ];
-
+    console.log("players have been made within gamecontroller")
     //Receive the name DOM element from screenController as newName, set player name
     //to the passed variable
     const setPlayerName = (newName, playerNumber) => {
@@ -117,7 +117,11 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
     const switchPlayerTurn = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
-    };
+        //Activate AI when it is 2nd players turn
+        if (activePlayer === players[1]) {
+            AI.activeAI();
+        }
+    }
 
     //Will be used for console declaration and later for UI 
     const getActivePlayer = () => activePlayer;
@@ -163,7 +167,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
             }
 
             //Switch turn
-            switchPlayerTurn();    
+            switchPlayerTurn();            
         }
         else {
             return false;
@@ -177,7 +181,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         cells.forEach(cell => {
         cell.textContent = '';
         cell.className = 'cell';
-        })
+        });
     }
 
 
@@ -213,7 +217,11 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, resetScreen, getActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard};
+    //Initialize an instance of AI and pass the gameController to it
+    const AI = AIController(this);
+
+    return { playRound, resetScreen, getActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard };
+    
 }
 
 
@@ -223,9 +231,11 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 /////////////////////
 
 //Brings in all game functions to be tied into UI elements
-function ScreenController {
+function ScreenController() {
     const game = GameController();
     const players = game.players;
+    const AI = AIController(game);
+    
 
     //Get HTML elements and store as variables
     const activePlayerDiv = document.querySelector('#active-player');
@@ -235,6 +245,8 @@ function ScreenController {
     const playerOneName = document.querySelector('#player-1');
     const playerTwoName = document.querySelector('#player-2');
     const newGameButton = document.querySelector('#new-game');
+    const AIbutton = document.querySelector('#AIbutton');
+
     
     //Set game as active (players can place tokens)
     let gameInProgress = true;
@@ -329,12 +341,9 @@ function ScreenController {
         updateScreen(selectedColumn, selectedRow);
     }
 
+    AIbutton.addEventListener('click', AI.toggleAI);
+
     boardDiv.addEventListener('click', clickHandler);
-
-
-    function displayWinner() {
-
-    }
 
     //When an edit button is clicked tell the edit function which button has been clicked
     document.querySelector('#edit-player1-name').addEventListener('click', function() {
@@ -373,34 +382,45 @@ function ScreenController {
 //        AI        //
 //////////////////////
 
-function AI() {
-    //Check whether the setting is set to computer or player mode
-        //create a DOM element that can be turned on or off.  Board should be reset anytime the button is changed
-        //If the setting is turned on then every turn the AI should select a random open cell to place its mark on
-            //Select random number between 1 and 3 twice, for Cell[x][y]
-            //Check whether the cell is free or occupied.  If it is free then place a mark, if it is occupied then look again
-    let game = GameController();
-    const players = game.players;
-    let AIbutton = document.querySelector('#AIbutton');
-    AIbutton.addEventListener('click', isActive());
+function AIController(game) {
+    let AIActive = false;
 
-    const isActive = () => {
-        //Alternate AI button value on click
-        AIbutton.value = AIbutton.value == false ? true : false;
+    const toggleAI = () => {
+        // Toggle the AI on or off
+        AIActive = !AIActive;
+        console.log("AI is active? " + AIActive)
 
-        //If the button has a value of true then activate the AI
-        if (AIbutton.value == true) {
-            activeAI();
-        }
+        // Change button color based on AI state
+        AIbutton.style.backgroundColor = AIActive ? "blue" : "red";
+        // Reset board when AI is toggled
+        game.resetScreen();
     }
 
     const activeAI = () => {
-        
-    } 
+        if (AIActive && game.getActivePlayer() === game.players[1]) {
+            // Delay AI move to simulate thinking time
+            setTimeout(cellSelector, 500);
+        }
+    };
 
     const cellSelector = () => {
+        // AI selects a random available cell
+        let x = Math.floor(Math.random() * 3); // 0 to 2 for columns
+        let y = Math.floor(Math.random() * 3); // 0 to 2 for rows
+        let validMove = game.playRound(x, y);
+        console.log(`AI is attempting to place a mark at ${x},${y}`);
 
-    }
+        if (!validMove) {
+            cellSelector(); // Retry until a valid move is found
+        }
+
+        //On successfull attempt play a round with the given values
+        game.playRound(x,y);
+        console.log(`AI has placed a mark at ${x},${y}`)
+    };
+
+    return { activeAI, toggleAI };
 }
 
+AIController();
 ScreenController();
