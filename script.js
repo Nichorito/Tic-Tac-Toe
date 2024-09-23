@@ -1,5 +1,3 @@
-
-
 /*
 ** The gameboard represents the state of the game.  
 ** Each square has a cell, which will be defined later
@@ -114,6 +112,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         players[playerNumber].name = newName;
     };
 
+    //Logic for switching turns
     let activePlayer = players[0];
 
     const switchPlayerTurn = () => {
@@ -123,7 +122,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Will be used for console declaration and later for UI 
     const getActivePlayer = () => activePlayer;
 
-    const incrementScore = () => activePlayer.score++
+    const incrementScore = () => activePlayer.score++;
 
 
     //Creates an updated board within the console, checks if a player has won,
@@ -159,12 +158,15 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
             if (playerWon == true) {
                 incrementScore();
-                console.log("Nicholas' score is " + players[0].score + ". Guest score is " + players[1].score);              
+                console.log(`${players[0].name}s' score is ` + players[0].score + `. ${players[1].name}s score is ` + players[1].score);              
                 return;
             }
 
             //Switch turn
             switchPlayerTurn();    
+        }
+        else {
+            return false;
         }
     }
 
@@ -180,7 +182,6 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
 
      //Checks to see whehter a player has made 3 of a row horizontally, vertically, or diagonally
-
      const checkWinCondition = (currentBoard) => {
         //Check for horizontal win conditions
         for (let row = 0; row < 3; row++) {
@@ -221,23 +222,24 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 //SCREEN CONTROLLER//
 /////////////////////
 
-function ScreenController() {
-    //Brings in all game functions to be tied into UI elements
+//Brings in all game functions to be tied into UI elements
+function ScreenController {
     const game = GameController();
     const players = game.players;
 
+    //Get HTML elements and store as variables
     const activePlayerDiv = document.querySelector('#active-player');
     const boardDiv = document.querySelector('.grid');
-
     const playerOneScore = document.querySelector('#player1-score');
     const playerTwoScore = document.querySelector('#player2-score');
     const playerOneName = document.querySelector('#player-1');
     const playerTwoName = document.querySelector('#player-2');
-
     const newGameButton = document.querySelector('#new-game');
     
+    //Set game as active (players can place tokens)
     let gameInProgress = true;
 
+    //Name Updated (Called when the edit button is clicked)
     const updateName = (playerNumber) => {
         
         //Edit player 1 name
@@ -365,6 +367,40 @@ function ScreenController() {
     updateScreen();
 
     return {displayWinner}
+}
+
+//////////////////////
+//        AI        //
+//////////////////////
+
+function AI() {
+    //Check whether the setting is set to computer or player mode
+        //create a DOM element that can be turned on or off.  Board should be reset anytime the button is changed
+        //If the setting is turned on then every turn the AI should select a random open cell to place its mark on
+            //Select random number between 1 and 3 twice, for Cell[x][y]
+            //Check whether the cell is free or occupied.  If it is free then place a mark, if it is occupied then look again
+    let game = GameController();
+    const players = game.players;
+    let AIbutton = document.querySelector('#AIbutton');
+    AIbutton.addEventListener('click', isActive());
+
+    const isActive = () => {
+        //Alternate AI button value on click
+        AIbutton.value = AIbutton.value == false ? true : false;
+
+        //If the button has a value of true then activate the AI
+        if (AIbutton.value == true) {
+            activeAI();
+        }
+    }
+
+    const activeAI = () => {
+        
+    } 
+
+    const cellSelector = () => {
+
+    }
 }
 
 ScreenController();
