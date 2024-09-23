@@ -181,20 +181,23 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     };
 
     const AIMove = () => {
-        let validMove = false;
-        let column, row;
-    
-        while (!validMove) {
-            column = Math.floor(Math.random() * 3); // 0 to 2 for columns
-            row = Math.floor(Math.random() * 3); // 0 to 2 for rows
-    
-            console.log(`AI is attempting to place a mark at ${column},${row}`);
-            validMove = playRound(column, row); // Attempt to play the round and check if valid
+        const canAIMove = document.querySelector('#AIbutton').value;
+        if (canAIMove === "true") {
+            let validMove = false;
+            let column, row;
+        
+            while (!validMove) {
+                column = Math.floor(Math.random() * 3); // 0 to 2 for columns
+                row = Math.floor(Math.random() * 3); // 0 to 2 for rows
+        
+                console.log(`AI is attempting to place a mark at ${column},${row}`);
+                validMove = playRound(column, row); // Attempt to play the round and check if valid
+            }
+        
+            console.log(`AI has placed a mark at ${column},${row}`);
+            updateScreenCallback(column, row);
+            return {column, row}
         }
-    
-        console.log(`AI has placed a mark at ${column},${row}`);
-        updateScreenCallback(column, row);
-        return {column, row}
     };
 
     const resetScreen = () => {
