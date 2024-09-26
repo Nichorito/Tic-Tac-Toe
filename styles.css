@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 :root {
@@ -42,7 +43,8 @@ h1 {
     top: 5%; right: 10%;
     width: 10%;
     height: 5%;
-    font-size: 1.5rem;
+    padding: 0px;
+    font-size: 100%;
     font-weight: bolder;
     border-radius: 25px;
     box-shadow: none;
@@ -83,8 +85,7 @@ h1 {
 }
 
 .player-name {
-    height: 20vh;
-    font-size: min(4rem, 4vw);
+    font-size: min(4rem, 3vw);
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -116,12 +117,8 @@ h1 {
 #edit-player1-name {
     display: flex;
     bottom: 0px;
-    left: -50px;
     flex-direction: column;
     justify-content: end;
-    padding-bottom: max(1.4rem, 1vh);
-    padding-right: min(20px, 1vw);
-    padding-left: max(1rem, 5px);
     font-size: min(2.5rem, 4.5vw);
     opacity: 50%;
     cursor: pointer;
@@ -134,8 +131,6 @@ h1 {
     right: -50px;
     flex-direction: column;
     justify-content: end;
-    padding-bottom: max(1.4rem, 1vh);
-    padding-left: min(20px, 1vw);
     font-size: min(2.5rem, 4.5vw);
     opacity: 50%;
 }
