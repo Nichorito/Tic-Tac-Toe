@@ -91,6 +91,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
     //Create the board and screen
     const board = Gameboard();
+    let gameInProgress = true;
 
     //Create player objects with name and marker type
     const players = [
@@ -145,42 +146,54 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         board.printBoard();
     }
 
-
+    
     //Runs anytime a tile is clicked
 
     const playRound = (column, row) => {
-        const cell = Cell();
+       // if (gameInProgress == true) {
+            const cell = Cell();
 
-        //Place player mark on desired column and row
-        console.log(`Marking ${column},${row} with ${getActivePlayer().name}'s mark: ${getActivePlayer().mark}`);
-
-        //Generate new board
-        printNewRound();
-
-        let validMove = board.placeMarker(column, row, getActivePlayer().mark)
-
-        //Check whether the desired column and row are available
-        if (validMove === true){
-
-            //Set color of marker
-            cell.setColor(row, column, getActivePlayer().name)
-
-            const currentBoard = board.printBoard();
-            const playerWon = checkWinCondition(currentBoard);
-
-            if (playerWon == true) {
-                incrementScore();
-                console.log(`${players[0].name}s' score is ` + players[0].score + `. ${players[1].name}s score is ` + players[1].score);              
-                return;
+            //Place player mark on desired column and row
+            console.log(`Marking ${column},${row} with ${getActivePlayer().name}'s mark: ${getActivePlayer().mark}`);
+    
+            //Generate new board
+            printNewRound();
+    
+            let validMove = board.placeMarker(column, row, getActivePlayer().mark)
+    
+            //Check whether the desired column and row are available
+            if (validMove === true){
+    
+                //Set color of marker
+                cell.setColor(row, column, getActivePlayer().name)
+    
+                const currentBoard = board.printBoard();
+                const playerWon = checkWinCondition(currentBoard);
+                const draw = checkForDraw(currentBoard);
+    
+                if (playerWon == true) {
+                    incrementScore();
+                    console.log(`${players[0].name}s' score is ` + players[0].score + `. ${players[1].name}s score is ` + players[1].score);       
+                    updateScreenCallback(column, row);       
+                    switchPlayerTurn();
+                    return;
+                }
+    
+                if (draw == true) {
+                    console.log("\nDRAW!")
+                    updateScreenCallback(column, row);
+                    switchPlayerTurn();
+                    return;
+                }
+    
+                //Switch turn
+                switchPlayerTurn();
+                return true; 
             }
-
-            //Switch turn
-            switchPlayerTurn();
-            return true; 
-        }
-        else {
-            return false;
-        }
+            else {
+                return false;
+            }
+      //  }
     }
 
     let updateScreenCallback;
@@ -191,7 +204,8 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
     const AIMove = () => {
         const canAIMove = document.querySelector('#AIbutton').value;
-        if (canAIMove === "true") {
+        console.log("Can AI move? " + canAIMove + " ; Is the game in progress? " + gameInProgress);
+        if (canAIMove === "true" && gameInProgress == true) {
             let validMove = false;
             let column, row;
             
@@ -201,6 +215,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
                 
                 console.log(`AI is attempting to place a mark at ${move[0]},${move[1]}`);
                 validMove = playRound(move[0], move[1]); // Attempt to play the round and check if valid
+                if (gameInProgress == false) {return}
             }
 
             function RandomMove() {
@@ -254,16 +269,30 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         cells.forEach(cell => {
         cell.textContent = '';
         cell.className = 'cell';
+        gameInProgress = true;
         });
     }
 
-
-     //Checks to see whehter a player has made 3 of a row horizontally, vertically, or diagonally
-     const checkWinCondition = (currentBoard) => {
+    const checkForDraw = (currentBoard) => {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (currentBoard[i][j] === '') {
+                    return false; // There's at least one empty space, not a draw
+                }
+            }
+        }
+        console.log("Game is draw")
+        gameInProgress = false;
+        return true;
+    }
+    
+    //Checks to see whehter a player has made 3 of a row horizontally, vertically, or diagonally
+    const checkWinCondition = (currentBoard) => {
         //Check for horizontal win conditions
         for (let row = 0; row < 3; row++) {
             if (currentBoard[row][0] === currentBoard[row][1] && currentBoard[row][1] === currentBoard[row][2] && currentBoard[row][0] !== '') {
                 console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+                gameInProgress = false;
                 return true;
             }
         }
@@ -272,6 +301,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         for (let col = 0; col < 3; col++) {
             if (currentBoard[0][col] === currentBoard[1][col] && currentBoard[1][col] === currentBoard[2][col] && currentBoard[0][col] !== '') {
                 console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+                gameInProgress = false;
                 return true;
             }
         }
@@ -280,6 +310,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         if ((currentBoard[0][0] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][2] && currentBoard[0][0] !== '') ||
             (currentBoard[0][2] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][0] && currentBoard[0][2] !== '')) {
                 console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+                gameInProgress = false;
                 return true;
         }
 
@@ -290,7 +321,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, AIMove, setUpdateScreen, clearGrid, resetScore, getActivePlayer, setActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard };
+    return { playRound, AIMove, setUpdateScreen, clearGrid, resetScore, getActivePlayer, setActivePlayer, checkWinCondition, checkForDraw, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard, gameInProgress };
     
 }
 
@@ -364,6 +395,7 @@ function ScreenController() {
         const board = game.getBoard();
         const currentBoard = game.printBoard();
         const playerWon = game.checkWinCondition(currentBoard);
+        const draw = game.checkForDraw(currentBoard);
         const activePlayer = game.getActivePlayer();
 
         //Display the current turn
@@ -388,6 +420,18 @@ function ScreenController() {
         if (playerWon === true){
             //Display the winner
             activePlayerDiv.textContent = `${activePlayer.name} Wins!`;
+
+            //Disable the flow of the game
+            gameInProgress = false;
+
+            //Display new game button
+            newGameButton.style.display = 'block';
+        }        
+
+        //Draw logic
+        if (draw === true){
+            //Display the winner
+            activePlayerDiv.textContent = `DRAW!`;
 
             //Disable the flow of the game
             gameInProgress = false;
