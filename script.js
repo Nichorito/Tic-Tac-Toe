@@ -194,18 +194,56 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         if (canAIMove === "true") {
             let validMove = false;
             let column, row;
-        
+            
             while (!validMove) {
+                let move = blockPlayer();
+                if (blockPlayer() == null) { move = RandomMove(); }
+                
+                console.log(`AI is attempting to place a mark at ${move[0]},${move[1]}`);
+                validMove = playRound(move[0], move[1]); // Attempt to play the round and check if valid
+            }
+
+            function RandomMove() {
                 column = Math.floor(Math.random() * 3); // 0 to 2 for columns
                 row = Math.floor(Math.random() * 3); // 0 to 2 for rows
-        
-                console.log(`AI is attempting to place a mark at ${column},${row}`);
-                validMove = playRound(column, row); // Attempt to play the round and check if valid
+                return [column, row];
+            }
+
+            // Check if the player is about to win and block them
+            function blockPlayer() {
+                const currentBoard = board.printBoard();
+                
+                // Check rows
+                for (let i = 0; i < 3; i++) {
+                    if (currentBoard[i][0] === 'X' && currentBoard[i][1] === 'X' && currentBoard[i][2] === '') return [i, 2];
+                    if (currentBoard[i][0] === 'X' && currentBoard[i][2] === 'X' && currentBoard[i][1] === '') return [i, 1];
+                    if (currentBoard[i][1] === 'X' && currentBoard[i][2] === 'X' && currentBoard[i][0] === '') return [i, 0];
+                    
+                }
+                // Check columns
+                for (let j = 0; j < 3; j++) {
+                    if (currentBoard[0][j] === 'X' && currentBoard[1][j] === 'X' && currentBoard[2][j] === '') return [2, j];
+                    if (currentBoard[0][j] === 'X' && currentBoard[2][j] === 'X' && currentBoard[1][j] === '') return [1, j];
+                    if (currentBoard[1][j] === 'X' && currentBoard[2][j] === 'X' && currentBoard[0][j] === '') return [0, j];
+                    
+                }
+                // Check diagonals
+                if (currentBoard[0][0] === 'X' && currentBoard[1][1] === 'X' && currentBoard[2][2] === '') return [2, 2];
+                if (currentBoard[0][0] === 'X' && currentBoard[2][2] === 'X' && currentBoard[1][1] === '') return [1, 1];
+                if (currentBoard[1][1] === 'X' && currentBoard[2][2] === 'X' && currentBoard[0][0] === '') return [0, 0];
+                
+                if (currentBoard[0][2] === 'X' && currentBoard[1][1] === 'X' && currentBoard[2][0] === '') return [2, 0];
+                if (currentBoard[0][2] === 'X' && currentBoard[2][0] === 'X' && currentBoard[1][1] === '') return [1, 1];
+                if (currentBoard[1][1] === 'X' && currentBoard[2][0] === 'X' && currentBoard[0][2] === '') return [0, 2];
+
+                console.log("No win condition found")
+                // No blocking move found
+                return null;
             }
         
             console.log(`AI has placed a mark at ${column},${row}`);
             updateScreenCallback(column, row);
-            return {column, row}
+            return {column, row};
         }
     };
 
