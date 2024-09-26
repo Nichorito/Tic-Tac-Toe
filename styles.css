@@ -242,8 +242,8 @@ input {
     height: 100%;
     border: min(3px, 0.3vw) solid #002d38; 
     background-color: #f8e5d5;
-    color: #4f8a9d;
     font-size: min(6rem, 5vw);
+    color: #4f8a9d;
     font-family: "Coiny", system-ui;
     font-weight: 400;
     font-style: normal;
@@ -293,11 +293,11 @@ input {
     border-right: none;
 }
 
-.Nicholas {
+.O {
     color: #4f8a9d;
 }
 
-.Guest {
+.X {
     color: #fea19a;
 }
 

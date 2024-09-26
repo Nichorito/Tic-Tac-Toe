@@ -165,7 +165,7 @@ function GameController(playerOneName = "Guest", playerTwoName = "Nicholas") {
             if (validMove === true){
     
                 //Set color of marker
-                cell.setColor(row, column, getActivePlayer().name)
+                cell.setColor(row, column, getActivePlayer().mark)
     
                 const currentBoard = board.printBoard();
                 const playerWon = checkWinCondition(currentBoard);
