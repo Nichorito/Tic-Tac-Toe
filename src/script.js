@@ -1,5 +1,4 @@
 import "./styles.css";
-
 /*
 ** The gameboard represents the state of the game.  
 ** Each square has a cell, which will be defined later
@@ -89,10 +88,11 @@ function Cell() {
 ** It also determines when the game is over and increments winning players score
 */
 
-function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
+function GameController(playerOneName = "Guest", playerTwoName = "Nicholas") {
 
     //Create the board and screen
     const board = Gameboard();
+    let gameInProgress = true;
 
     //Create player objects with name and marker type
     const players = [
@@ -147,42 +147,52 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         board.printBoard();
     }
 
-
+    
     //Runs anytime a tile is clicked
 
     const playRound = (column, row) => {
-        const cell = Cell();
+       // if (gameInProgress == true) {
+            const cell = Cell();
 
-        //Place player mark on desired column and row
-        console.log(`Marking ${column},${row} with ${getActivePlayer().name}'s mark: ${getActivePlayer().mark}`);
-
-        //Generate new board
-        printNewRound();
-
-        let validMove = board.placeMarker(column, row, getActivePlayer().mark)
-
-        //Check whether the desired column and row are available
-        if (validMove === true){
-
-            //Set color of marker
-            cell.setColor(row, column, getActivePlayer().name)
-
-            const currentBoard = board.printBoard();
-            const playerWon = checkWinCondition(currentBoard);
-
-            if (playerWon == true) {
-                incrementScore();
-                console.log(`${players[0].name}s' score is ` + players[0].score + `. ${players[1].name}s score is ` + players[1].score);              
-                return;
+            //Place player mark on desired column and row
+            console.log(`Marking ${column},${row} with ${getActivePlayer().name}'s mark: ${getActivePlayer().mark}`);
+    
+            //Generate new board
+            printNewRound();
+    
+            let validMove = board.placeMarker(column, row, getActivePlayer().mark)
+    
+            //Check whether the desired column and row are available
+            if (validMove === true){
+    
+                //Set color of marker
+                cell.setColor(row, column, getActivePlayer().mark)
+    
+                const currentBoard = board.printBoard();
+                const playerWon = checkWinCondition(currentBoard);
+                const draw = checkForDraw(currentBoard);
+    
+                if (playerWon == true) {
+                    incrementScore();
+                    console.log(`${players[0].name}s' score is ` + players[0].score + `. ${players[1].name}s score is ` + players[1].score);       
+                    updateScreenCallback(column, row);     
+                    return;
+                }
+    
+                if (draw == true) {
+                    console.log("\nDRAW!")
+                    updateScreenCallback(column, row);
+                    return;
+                }
+    
+                //Switch turn
+                switchPlayerTurn();
+                return true; 
             }
-
-            //Switch turn
-            switchPlayerTurn();
-            return true; 
-        }
-        else {
-            return false;
-        }
+            else {
+                return false;
+            }
+      //  }
     }
 
     let updateScreenCallback;
@@ -193,21 +203,96 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
 
     const AIMove = () => {
         const canAIMove = document.querySelector('#AIbutton').value;
-        if (canAIMove === "true") {
+        console.log("Can AI move? " + canAIMove + " ; Is the game in progress? " + gameInProgress);
+        if (canAIMove === "true" && gameInProgress == true) {
             let validMove = false;
             let column, row;
-        
+            
             while (!validMove) {
+                //Attempt a winning move, if no winning move is possible then check to see if the player 
+                //is about to win.  If both are null then make a random move
+                let move = checkForWin();
+                if (checkForWin() == null) { move = blockPlayer(); }
+                if (blockPlayer() == null) { move = RandomMove(); }
+                
+                console.log(`AI is attempting to place a mark at ${move[0]},${move[1]}`);
+                validMove = playRound(move[0], move[1]); // Attempt to play the round and check if valid
+                if (gameInProgress == false) {return}
+            }
+
+            function RandomMove() {
                 column = Math.floor(Math.random() * 3); // 0 to 2 for columns
                 row = Math.floor(Math.random() * 3); // 0 to 2 for rows
-        
-                console.log(`AI is attempting to place a mark at ${column},${row}`);
-                validMove = playRound(column, row); // Attempt to play the round and check if valid
+                return [column, row];
+            }
+
+            //Check if there are any possible moves to win for the AI (runs before the blocking function)
+            function checkForWin() {
+                const currentBoard = board.printBoard();
+                
+                // Check rows
+                for (let i = 0; i < 3; i++) {
+                    if (currentBoard[i][0] === 'O' && currentBoard[i][1] === 'O' && currentBoard[i][2] === '') return [i, 2];
+                    if (currentBoard[i][0] === 'O' && currentBoard[i][2] === 'O' && currentBoard[i][1] === '') return [i, 1];
+                    if (currentBoard[i][1] === 'O' && currentBoard[i][2] === 'O' && currentBoard[i][0] === '') return [i, 0];
+                    
+                }
+                // Check columns
+                for (let j = 0; j < 3; j++) {
+                    if (currentBoard[0][j] === 'O' && currentBoard[1][j] === 'O' && currentBoard[2][j] === '') return [2, j];
+                    if (currentBoard[0][j] === 'O' && currentBoard[2][j] === 'O' && currentBoard[1][j] === '') return [1, j];
+                    if (currentBoard[1][j] === 'O' && currentBoard[2][j] === 'O' && currentBoard[0][j] === '') return [0, j];
+                    
+                }
+                // Check diagonals
+                if (currentBoard[0][0] === 'O' && currentBoard[1][1] === 'O' && currentBoard[2][2] === '') return [2, 2];
+                if (currentBoard[0][0] === 'O' && currentBoard[2][2] === 'O' && currentBoard[1][1] === '') return [1, 1];
+                if (currentBoard[1][1] === 'O' && currentBoard[2][2] === 'O' && currentBoard[0][0] === '') return [0, 0];
+                
+                if (currentBoard[0][2] === 'O' && currentBoard[1][1] === 'O' && currentBoard[2][0] === '') return [2, 0];
+                if (currentBoard[0][2] === 'O' && currentBoard[2][0] === 'O' && currentBoard[1][1] === '') return [1, 1];
+                if (currentBoard[1][1] === 'O' && currentBoard[2][0] === 'O' && currentBoard[0][2] === '') return [0, 2];
+
+                console.log("No win condition found")
+                // No blocking move found
+                return null;
+            }
+
+            // Check if the player is about to win and block them
+            function blockPlayer() {
+                const currentBoard = board.printBoard();
+                
+                // Check rows
+                for (let i = 0; i < 3; i++) {
+                    if (currentBoard[i][0] === 'X' && currentBoard[i][1] === 'X' && currentBoard[i][2] === '') return [i, 2];
+                    if (currentBoard[i][0] === 'X' && currentBoard[i][2] === 'X' && currentBoard[i][1] === '') return [i, 1];
+                    if (currentBoard[i][1] === 'X' && currentBoard[i][2] === 'X' && currentBoard[i][0] === '') return [i, 0];
+                    
+                }
+                // Check columns
+                for (let j = 0; j < 3; j++) {
+                    if (currentBoard[0][j] === 'X' && currentBoard[1][j] === 'X' && currentBoard[2][j] === '') return [2, j];
+                    if (currentBoard[0][j] === 'X' && currentBoard[2][j] === 'X' && currentBoard[1][j] === '') return [1, j];
+                    if (currentBoard[1][j] === 'X' && currentBoard[2][j] === 'X' && currentBoard[0][j] === '') return [0, j];
+                    
+                }
+                // Check diagonals
+                if (currentBoard[0][0] === 'X' && currentBoard[1][1] === 'X' && currentBoard[2][2] === '') return [2, 2];
+                if (currentBoard[0][0] === 'X' && currentBoard[2][2] === 'X' && currentBoard[1][1] === '') return [1, 1];
+                if (currentBoard[1][1] === 'X' && currentBoard[2][2] === 'X' && currentBoard[0][0] === '') return [0, 0];
+                
+                if (currentBoard[0][2] === 'X' && currentBoard[1][1] === 'X' && currentBoard[2][0] === '') return [2, 0];
+                if (currentBoard[0][2] === 'X' && currentBoard[2][0] === 'X' && currentBoard[1][1] === '') return [1, 1];
+                if (currentBoard[1][1] === 'X' && currentBoard[2][0] === 'X' && currentBoard[0][2] === '') return [0, 2];
+
+                console.log("No win condition found")
+                // No blocking move found
+                return null;
             }
         
             console.log(`AI has placed a mark at ${column},${row}`);
             updateScreenCallback(column, row);
-            return {column, row}
+            return {column, row};
         }
     };
 
@@ -218,16 +303,30 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         cells.forEach(cell => {
         cell.textContent = '';
         cell.className = 'cell';
+        gameInProgress = true;
         });
     }
 
-
-     //Checks to see whehter a player has made 3 of a row horizontally, vertically, or diagonally
-     const checkWinCondition = (currentBoard) => {
+    const checkForDraw = (currentBoard) => {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (currentBoard[i][j] === '') {
+                    return false; // There's at least one empty space, not a draw
+                }
+            }
+        }
+        console.log("Game is draw")
+        gameInProgress = false;
+        return true;
+    }
+    
+    //Checks to see whehter a player has made 3 of a row horizontally, vertically, or diagonally
+    const checkWinCondition = (currentBoard) => {
         //Check for horizontal win conditions
         for (let row = 0; row < 3; row++) {
             if (currentBoard[row][0] === currentBoard[row][1] && currentBoard[row][1] === currentBoard[row][2] && currentBoard[row][0] !== '') {
                 console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+                gameInProgress = false;
                 return true;
             }
         }
@@ -236,6 +335,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         for (let col = 0; col < 3; col++) {
             if (currentBoard[0][col] === currentBoard[1][col] && currentBoard[1][col] === currentBoard[2][col] && currentBoard[0][col] !== '') {
                 console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+                gameInProgress = false;
                 return true;
             }
         }
@@ -244,6 +344,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
         if ((currentBoard[0][0] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][2] && currentBoard[0][0] !== '') ||
             (currentBoard[0][2] === currentBoard[1][1] && currentBoard[1][1] === currentBoard[2][0] && currentBoard[0][2] !== '')) {
                 console.log(`CONGRATULATIONS ${getActivePlayer().name.toUpperCase()}!! YOU WON!!!`);
+                gameInProgress = false;
                 return true;
         }
 
@@ -254,7 +355,7 @@ function GameController(playerOneName = "Nicholas", playerTwoName = "Guest") {
     //Initial boot display
     printNewRound();
 
-    return { playRound, AIMove, setUpdateScreen, clearGrid, resetScore, getActivePlayer, setActivePlayer, checkWinCondition, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard };
+    return { playRound, AIMove, setUpdateScreen, clearGrid, resetScore, getActivePlayer, setActivePlayer, checkWinCondition, checkForDraw, switchPlayerTurn, setPlayerName, players, getBoard: board.getBoard, printBoard: board.printBoard, gameInProgress };
     
 }
 
@@ -328,6 +429,7 @@ function ScreenController() {
         const board = game.getBoard();
         const currentBoard = game.printBoard();
         const playerWon = game.checkWinCondition(currentBoard);
+        const draw = game.checkForDraw(currentBoard);
         const activePlayer = game.getActivePlayer();
 
         //Display the current turn
@@ -352,6 +454,18 @@ function ScreenController() {
         if (playerWon === true){
             //Display the winner
             activePlayerDiv.textContent = `${activePlayer.name} Wins!`;
+
+            //Disable the flow of the game
+            gameInProgress = false;
+
+            //Display new game button
+            newGameButton.style.display = 'block';
+        }        
+
+        //Draw logic
+        if (draw === true){
+            //Display the winner
+            activePlayerDiv.textContent = `DRAW!`;
 
             //Disable the flow of the game
             gameInProgress = false;
