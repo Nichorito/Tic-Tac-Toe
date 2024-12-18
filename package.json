@@ -4,7 +4,8 @@
   "description": "This is a simple web recreation of the classic game Tic Tac Toe.",
   "main": "script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
   },
   "keywords": [],
   "author": "",
