@@ -23,6 +23,12 @@ h1 {
     margin: 5px;
 }
 
+@media (max-width: 600px) {
+    div {
+        display: none;
+    }
+}
+
 /*//////////
 /* HEADER */
 /*////////*/
@@ -30,7 +36,8 @@ h1 {
 #header {
     display: flex;
     justify-content: center;
-    font-size: 2rem;
+    text-align: center;
+    font-size: min(6.2vw,2rem);
     padding: none;
     color: #f8e5d5;
 }
@@ -42,10 +49,9 @@ h1 {
     color: #FBF5E6;
     position: absolute;
     top: 5%; right: 10%;
-    width: 10%;
-    height: 5%;
-    padding: 0px;
-    font-size: 100%;
+    width: max(50px, 10%);
+    height: fit-content;
+    font-size: min(4vw,1rem);
     font-weight: bolder;
     border-radius: 25px;
     box-shadow: none;
@@ -145,7 +151,6 @@ input {
     position: absolute;
     width: 85%;
     height: 30%;
-    font-size: min(4rem, 3vw);
     font-family: "Coiny", system-ui;
     border-radius: .5rem;
     border: 1px solid rgba(0, 0, 0, 0.432);
@@ -175,7 +180,7 @@ input {
 }
 
 #active-player {
-    font-size: min(2rem, 3vw);
+    font-size: max(3.1vw,1em);
     padding-top: 30px;
     display: flex;
     flex-direction: column;
@@ -183,7 +188,7 @@ input {
 }
 
 #new-game {
-    font-size: 2rem;
+    font-size: max(3.1vw,1em);
     padding-top: 30px;
     border: none;
     color: #facac7;
@@ -243,7 +248,7 @@ input {
     height: 100%;
     border: min(3px, 0.3vw) solid #002d38; 
     background-color: #f8e5d5;
-    font-size: min(6rem, 5vw);
+    font-size: max(3rem, 6vw);
     color: #4f8a9d;
     font-family: "Coiny", system-ui;
     font-weight: 400;
@@ -302,4 +307,39 @@ input {
     color: #fea19a;
 }
 
+/*////////////
+MOBILE SETTINGS
+/////////////*/
 
+@media (max-width: 600px) {
+    #main-left, #main-right{
+        display: none!important;
+    }
+
+    #player1-mark,#name-container, #edit-player2-name, #edit-player1-name, .player-name, #player2-mark {
+        display: none;
+    }
+
+    #main {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    #AIbutton {
+        position: absolute;
+        top: 90%;
+        left: 42%;
+        width: fit-content;
+        height: fit-content;
+    }
+
+    #grid-container  {
+        
+        width: 80vw;
+    }
+
+    #main-center {
+        width: 100vw;
+    }
+}
