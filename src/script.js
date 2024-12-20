@@ -205,22 +205,122 @@ function GameController(playerOneName = "Guest", playerTwoName = "Nicholas") {
         const canAIMove = document.querySelector('#AIbutton').value;
         console.log("Can AI move? " + canAIMove + " ; Is the game in progress? " + gameInProgress);
         if (canAIMove === "true" && gameInProgress == true) {
-            let validMove = false;
-            let column, row;
-            
-            while (!validMove) {
-                //Attempt a winning move, if no winning move is possible then check to see if the player 
-                //is about to win.  If both are null then make a random move
-                let move = checkForWin();
-                if (checkForWin() == null) { move = blockPlayer(); }
-                if (blockPlayer() == null) { move = RandomMove(); }
+            const bestMove = findBestMove();
+            console.log(`AI has chosen to place a mark at ${bestMove.row}, ${bestMove.col}`);
+            playRound(bestMove.row, bestMove.col); // Play the chosen move
+            updateScreenCallback(bestMove.row, bestMove.col); // Update the screen
+        }
+
+            // while (!validMove) {
+            //     //Attempt a winning move, if no winning move is possible then check to see if the player 
+            //     //is about to win.  If both are null then make a random move
+            //     let move = checkForWin();
+            //     if (checkForWin() == null) { move = blockPlayer(); }
+            //     if (blockPlayer() == null) { move = RandomMove(); }
                 
-                console.log(`AI is attempting to place a mark at ${move[0]},${move[1]}`);
-                validMove = playRound(move[0], move[1]); // Attempt to play the round and check if valid
-                if (gameInProgress == false) {return}
+            //     console.log(`AI is attempting to place a mark at ${move[0]},${move[1]}`);
+            //     validMove = playRound(move[0], move[1]); // Attempt to play the round and check if valid
+            //     if (gameInProgress == false) {return}
+            // }
+
+            // Helper function to find the best move
+            function findBestMove() {
+                const currentBoard = board.printBoard();
+                let bestValue = -Infinity;
+                let bestMove = { row: -1, col: -1 };
+
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        if (currentBoard[i][j] === '') {
+                            currentBoard[i][j] = 'O'; // AI tries a move
+                            const moveValue = minimax(currentBoard, 0, false); // Evaluate the move
+                            currentBoard[i][j] = ''; // Undo the move
+
+                            //replace the best move if the evaluated move is better
+                            if (moveValue > bestValue) {
+                                bestValue = moveValue;
+                                bestMove = { row: i, col: j };
+                            }
+                        }
+                    }
+                }
+                //returns the best move possible
+                return bestMove;
             }
 
-            function RandomMove() {
+            // Minimax function to evaluate the best move
+            function minimax(board, depth, isMaximizingPlayer) {
+                const score = evaluateBoard(board);
+                if (score !== 0 || isGameOver(board)) return score; // Base case: terminal node
+
+                //Calculates the best possible move for the AI and gives it a score
+                if (isMaximizingPlayer) {
+                    let best = -Infinity;
+
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 3; j++) {
+                            if (board[i][j] === '') {
+                                board[i][j] = 'O'; // AI makes a move
+                                best = Math.max(best, minimax(board, depth + 1, false));
+                                board[i][j] = ''; // Undo the move
+                            }
+                        }
+                    }
+                    return best - depth; // Subtract depth to prefer quicker wins
+
+                //Calculates best possible player move and gives it a score
+                } else {
+                    let best = Infinity;
+
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 3; j++) {
+                            if (board[i][j] === '') {
+                                board[i][j] = 'X'; // Player makes a move
+                                best = Math.min(best, minimax(board, depth + 1, true));
+                                board[i][j] = ''; // Undo the move
+                            }
+                        }
+                    }
+                    return best + depth; // Add depth to delay opponent's win
+                }
+            }
+
+            function evaluateBoard(board) {
+                // Check rows, columns, and diagonals for a winner
+                for (let i = 0; i < 3; i++) {
+                    if (board[i][0] === board[i][1] && board[i][1] === board[i][2]) {
+                        if (board[i][0] === 'O') return 10; // AI wins
+                        if (board[i][0] === 'X') return -10; // Player wins
+                    }
+                    if (board[0][i] === board[1][i] && board[1][i] === board[2][i]) {
+                        if (board[0][i] === 'O') return 10;
+                        if (board[0][i] === 'X') return -10;
+                    }
+                }
+                if (board[0][0] === board[1][1] && board[1][1] === board[2][2]) {
+                    if (board[0][0] === 'O') return 10;
+                    if (board[0][0] === 'X') return -10;
+                }
+                if (board[0][2] === board[1][1] && board[1][1] === board[2][0]) {
+                    if (board[0][2] === 'O') return 10;
+                    if (board[0][2] === 'X') return -10;
+                }
+                return 0; // No winner
+            }
+
+            // Check if the game is over (no empty spaces)
+            function isGameOver(board) {
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        if (board[i][j] === '') return false;
+                    }
+                }
+                return true;
+            }
+
+
+            //////////OLD CODE////////////
+           /* function RandomMove() {
                 column = Math.floor(Math.random() * 3); // 0 to 2 for columns
                 row = Math.floor(Math.random() * 3); // 0 to 2 for rows
                 return [column, row];
@@ -293,7 +393,8 @@ function GameController(playerOneName = "Guest", playerTwoName = "Nicholas") {
             console.log(`AI has placed a mark at ${column},${row}`);
             updateScreenCallback(column, row);
             return {column, row};
-        }
+        }*/
+        
     };
 
     const clearGrid = () => {
